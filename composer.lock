@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f002acff1c27257652ac2775aab0013",
+    "content-hash": "e4f392c86629d4cc0caddaaa8ef6fe95",
     "packages": [
         {
             "name": "bamarni/composer-bin-plugin",
@@ -179,16 +179,16 @@
         },
         {
             "name": "nextcloud/ocp",
-            "version": "v31.0.6",
+            "version": "v31.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "bec55048b46eadbd2c564f2b26c9486a43f958c2"
+                "reference": "77679c75abf21dfc48a75fd282dea09b09ac096c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/bec55048b46eadbd2c564f2b26c9486a43f958c2",
-                "reference": "bec55048b46eadbd2c564f2b26c9486a43f958c2",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/77679c75abf21dfc48a75fd282dea09b09ac096c",
+                "reference": "77679c75abf21dfc48a75fd282dea09b09ac096c",
                 "shasum": ""
             },
             "require": {
@@ -221,9 +221,9 @@
             "description": "Composer package containing Nextcloud's public OCP API and the unstable NCU API",
             "support": {
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
-                "source": "https://github.com/nextcloud-deps/ocp/tree/v31.0.6"
+                "source": "https://github.com/nextcloud-deps/ocp/tree/v31.0.7"
             },
-            "time": "2025-05-28T00:52:27+00:00"
+            "time": "2025-07-04T00:53:40+00:00"
         },
         {
             "name": "php-cs-fixer/shim",
@@ -1444,7 +1444,7 @@
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.1"
     },
