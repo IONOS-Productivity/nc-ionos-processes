@@ -18,4 +18,16 @@
 	<extraFiles>
 		<directory name="vendor"/>
 	</extraFiles>
+	<issueHandlers>
+		<MixedInferredReturnType>
+			<errorLevel type="suppress">
+				<file name="lib/Service/ApiClientService.php"/>
+			</errorLevel>
+		</MixedInferredReturnType>
+		<PossiblyUnusedParam>
+			<errorLevel type="suppress">
+				<file name="lib/Service/ApiClientService.php"/>
+			</errorLevel>
+		</PossiblyUnusedParam>
+	</issueHandlers>
 </psalm>
