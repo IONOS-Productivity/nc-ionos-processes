@@ -20,10 +20,13 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Notify customers about created shares via internal mail service.
+ *
+ * @implements IEventListener<ShareCreatedEvent>
  */
 class ShareCreatedEventListener implements IEventListener {
 	public const EVENT_NAME_SHARE_BY_LINK = 'share-by-link';
 
+	/** @psalm-api */
 	public function __construct(
 		private readonly LoggerInterface $logger,
 		private readonly IUserManager $userManager,

@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 class IonosMailerService {
 	public const BRAND = 'IONOS';
 
+	/** @psalm-api */
 	public function __construct(
 		private IAppConfig $appConfig,
 		private LoggerInterface $logger,
