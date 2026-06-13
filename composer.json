@@ -35,7 +35,7 @@
 	"require-dev": {
 		"guzzlehttp/guzzle": "^7.4",
 		"nextcloud/coding-standard": "^1.3",
-		"nextcloud/ocp": "^v33.0.0",
+		"nextcloud/ocp": "^v34.0.0",
 		"roave/security-advisories": "dev-latest"
 	},
 	"repositories": [
