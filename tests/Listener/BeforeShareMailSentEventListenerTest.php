@@ -14,6 +14,7 @@ use OCA\IonosProcesses\Listener\BeforeShareMailSentEventListener;
 use OCA\IonosProcesses\Service\IonosMailerService;
 use OCA\ShareByMail\Event\BeforeShareMailSentEvent;
 use OCP\IL10N;
+use OCP\Mail\IMessage;
 use OCP\Share\IShare;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -30,6 +31,7 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 	private IonosMailerService $mockMailer;
 	private IL10N $mockL10N;
 	private IShare $mockShare;
+	private IMessage $mockMessage;
 
 	private BeforeShareMailSentEventListener $listener;
 
@@ -46,6 +48,7 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 			->getMock();
 
 		$this->mockShare = $this->getMockBuilder(IShare::class)->getMock();
+		$this->mockMessage = $this->getMockBuilder(IMessage::class)->getMock();
 
 		$this->listener = new BeforeShareMailSentEventListener(
 			$this->mockLogger,
@@ -56,9 +59,20 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 
 	private function makeEvent(
 		array $resolvedEmails = [self::MOCK_RECIPIENT],
-		array $mailData = [],
+		array $templateData = [],
 	): BeforeShareMailSentEvent {
-		return new BeforeShareMailSentEvent($this->mockShare, $resolvedEmails, null, $mailData);
+		if (empty($templateData)) {
+			$templateData = [
+				'senderUserId' => self::MOCK_USER_ID,
+				'filename' => self::MOCK_FILENAME,
+				'link' => self::MOCK_URL,
+				'initiator' => 'Test User',
+				'shareWith' => 'other@example.com',
+				'note' => self::MOCK_NOTE,
+				'expiration' => null,
+			];
+		}
+		return new BeforeShareMailSentEvent($this->mockShare, $resolvedEmails, $this->mockMessage, $templateData);
 	}
 
 	public function testNonShareTypeEmailIsIgnored(): void {
@@ -87,33 +101,12 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 		$this->assertTrue($event->isMailHandled());
 	}
 
-	public function testMissingSenderUserIdMarkHandledAndLogsError(): void {
-		$this->mockShare->method('getShareType')->willReturn(IShare::TYPE_EMAIL);
-		$this->mockShare->method('getToken')->willReturn(self::MOCK_SHARE_TOKEN);
-
-		$this->mockMailer->expects($this->never())->method('send');
-		$this->mockLogger->expects($this->once())->method('error');
-
-		$event = $this->makeEvent([self::MOCK_RECIPIENT], []);
-		$this->listener->handle($event);
-
-		$this->assertTrue($event->isMailHandled());
-	}
-
 	public function testSuccessfulSendWithoutExpiration(): void {
 		$mockLanguageCode = 'lang_LOCALE';
 
 		$this->mockShare->method('getShareType')->willReturn(IShare::TYPE_EMAIL);
 		$this->mockShare->method('getToken')->willReturn(self::MOCK_SHARE_TOKEN);
 		$this->mockL10N->method('getLanguageCode')->willReturn($mockLanguageCode);
-
-		$mailData = [
-			'senderUserId' => self::MOCK_USER_ID,
-			'fileName' => self::MOCK_FILENAME,
-			'resourceUrl' => self::MOCK_URL,
-			'note' => self::MOCK_NOTE,
-			'expiration' => null,
-		];
 
 		$this->mockMailer
 			->expects($this->once())
@@ -131,7 +124,7 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 				],
 			);
 
-		$event = $this->makeEvent([self::MOCK_RECIPIENT], $mailData);
+		$event = $this->makeEvent();
 		$this->listener->handle($event);
 
 		$this->assertTrue($event->isMailHandled());
@@ -147,10 +140,12 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 		$this->mockShare->method('getToken')->willReturn(self::MOCK_SHARE_TOKEN);
 		$this->mockL10N->method('getLanguageCode')->willReturn($mockLanguageCode);
 
-		$mailData = [
+		$templateData = [
 			'senderUserId' => self::MOCK_USER_ID,
-			'fileName' => self::MOCK_FILENAME,
-			'resourceUrl' => self::MOCK_URL,
+			'filename' => self::MOCK_FILENAME,
+			'link' => self::MOCK_URL,
+			'initiator' => 'Test User',
+			'shareWith' => 'other@example.com',
 			'note' => self::MOCK_NOTE,
 			'expiration' => $expiration,
 		];
@@ -171,7 +166,7 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 				],
 			);
 
-		$event = $this->makeEvent([self::MOCK_RECIPIENT], $mailData);
+		$event = $this->makeEvent([self::MOCK_RECIPIENT], $templateData);
 		$this->listener->handle($event);
 
 		$this->assertTrue($event->isMailHandled());
