@@ -12,7 +12,7 @@ namespace OCA\IonosProcesses\Tests\Service;
 use IONOS\MailNotificationAPI\Client\Api\EventAPIApi;
 use IONOS\MailNotificationAPI\Client\Model\ShareMessageByLink;
 use OCA\IonosProcesses\AppInfo\Application;
-use OCA\IonosProcesses\Listener\ShareCreatedEventListener;
+use OCA\IonosProcesses\Listener\BeforeShareMailSentEventListener;
 use OCA\IonosProcesses\Service\ApiClientService;
 use OCA\IonosProcesses\Service\IonosMailerService;
 use OCP\Exceptions\AppConfigException;
@@ -80,7 +80,7 @@ class IonosMailerServiceTest extends TestCase {
 			->expects($matcher)
 			->method('debug');
 
-		$this->service->send(ShareCreatedEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
+		$this->service->send(BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
 	}
 
 	public function testThrowExceptionWhenNoMailerServiceUrlConfigured() {
@@ -93,7 +93,7 @@ class IonosMailerServiceTest extends TestCase {
 		$this->expectException(AppConfigException::class);
 		$this->expectExceptionMessage('No mailer service configured');
 
-		$this->service->send(ShareCreatedEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
+		$this->service->send(BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
 	}
 
 	public function testThrowExceptionWhenNoMailerServiceUserConfigured() {
@@ -106,7 +106,7 @@ class IonosMailerServiceTest extends TestCase {
 		$this->expectException(AppConfigException::class);
 		$this->expectExceptionMessage('No mailer user configured');
 
-		$this->service->send(ShareCreatedEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
+		$this->service->send(BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
 	}
 
 	public function testThrowExceptionWhenNoMailerServicePassConfigured() {
@@ -119,7 +119,7 @@ class IonosMailerServiceTest extends TestCase {
 		$this->expectException(AppConfigException::class);
 		$this->expectExceptionMessage('No mailer service pass configured');
 
-		$this->service->send(ShareCreatedEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
+		$this->service->send(BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
 	}
 
 	public function testLogErrorWhenExceptionThrownByApi() {
@@ -150,6 +150,6 @@ class IonosMailerServiceTest extends TestCase {
 			['exception' => $exception]
 		);
 
-		$this->service->send(ShareCreatedEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
+		$this->service->send(BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK, ['key' => 'value']);
 	}
 }
