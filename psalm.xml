@@ -17,6 +17,7 @@
     </projectFiles>
 	<extraFiles>
 		<directory name="vendor"/>
+		<directory name="../../apps/sharebymail/lib/Event"/>
 	</extraFiles>
 	<issueHandlers>
 		<MixedInferredReturnType>

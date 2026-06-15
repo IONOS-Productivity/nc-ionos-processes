@@ -10,7 +10,7 @@ namespace OCA\IonosProcesses\Service;
 use Exception;
 use IONOS\MailNotificationAPI\Client\Model\ShareMessageByLink;
 use OCA\IonosProcesses\AppInfo\Application;
-use OCA\IonosProcesses\Listener\ShareCreatedEventListener;
+use OCA\IonosProcesses\Listener\BeforeShareMailSentEventListener;
 use OCP\Exceptions\AppConfigException;
 use OCP\IAppConfig;
 use Psr\Log\LoggerInterface;
@@ -70,7 +70,7 @@ class IonosMailerService {
 
 		$apiInstance = $this->apiClientService->newEventAPIApi($client, $apiBaseUrl);
 
-		if ($eventName === ShareCreatedEventListener::EVENT_NAME_SHARE_BY_LINK) {
+		if ($eventName === BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK) {
 			$message = new ShareMessageByLink($variables);
 			try {
 				$this->logger->debug('Send message to mailer service', ['event' => $eventName, 'variables' => $variables]);
