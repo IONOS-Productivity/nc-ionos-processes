@@ -25,7 +25,7 @@ abstract class AbstractBeforeShareMailSentEvent extends Event {
 		private IShare $share,
 		private array $resolvedEmails = [],
 		private ?IMessage $message = null,
-		private array $mailData = [],
+		protected array $templateData = [],
 	) {
 		parent::__construct();
 	}
@@ -43,11 +43,6 @@ abstract class AbstractBeforeShareMailSentEvent extends Event {
 		return $this->message;
 	}
 
-	/** @return array<string,mixed> */
-	public function getMailData(): array {
-		return $this->mailData;
-	}
-
 	public function markMailHandled(): void {
 		$this->mailHandled = true;
 	}
@@ -58,4 +53,24 @@ abstract class AbstractBeforeShareMailSentEvent extends Event {
 }
 
 class BeforeShareMailSentEvent extends AbstractBeforeShareMailSentEvent {
+	public function getSenderUserId(): string {
+		return (string)($this->templateData['senderUserId'] ?? '');
+	}
+
+	public function getFileName(): string {
+		return (string)($this->templateData['filename'] ?? '');
+	}
+
+	public function getResourceUrl(): string {
+		return (string)($this->templateData['link'] ?? '');
+	}
+
+	public function getNote(): string {
+		return (string)($this->templateData['note'] ?? '');
+	}
+
+	public function getExpiration(): ?\DateTime {
+		$v = $this->templateData['expiration'] ?? null;
+		return $v instanceof \DateTime ? $v : null;
+	}
 }

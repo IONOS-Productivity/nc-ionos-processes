@@ -59,24 +59,12 @@ class BeforeShareMailSentEventListener implements IEventListener {
 			return;
 		}
 
-		$mailData = $event->getMailData();
-		$senderUserId = isset($mailData['senderUserId']) && is_string($mailData['senderUserId'])
-			? $mailData['senderUserId']
-			: null;
-		if ($senderUserId === null) {
-			$event->markMailHandled();
-			$this->logger->error("missing senderUserId in mail data for share with token '" . $share->getToken() . "'");
-			return;
-		}
-
-		/** @var \DateTime|null $expiration */
-		$expiration = $mailData['expiration'] ?? null;
 		$data = [
-			'senderUserId' => $senderUserId,
-			'fileName' => isset($mailData['fileName']) && is_string($mailData['fileName']) ? $mailData['fileName'] : '',
-			'resourceUrl' => isset($mailData['resourceUrl']) && is_string($mailData['resourceUrl']) ? $mailData['resourceUrl'] : '',
-			'note' => isset($mailData['note']) && is_string($mailData['note']) ? $mailData['note'] : '',
-			'expirationDate' => $expiration instanceof \DateTime ? $expiration->getTimestamp() : null,
+			'senderUserId' => $event->getSenderUserId(),
+			'fileName' => $event->getFileName(),
+			'resourceUrl' => $event->getResourceUrl(),
+			'note' => $event->getNote(),
+			'expirationDate' => $event->getExpiration()?->getTimestamp(),
 			'language' => $this->l10n->getLanguageCode(),
 			'receiverEmails' => $resolvedEmails,
 		];
