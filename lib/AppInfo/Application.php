@@ -26,12 +26,10 @@ class Application extends App implements IBootstrap {
 	public function register(IRegistrationContext $context): void {
 		include_once __DIR__ . '/../../vendor/autoload.php';
 
-		if (class_exists(\OCA\ShareByMail\Event\BeforeShareMailSentEvent::class)) {
-			$context->registerEventListener(
-				\OCA\ShareByMail\Event\BeforeShareMailSentEvent::class,
-				BeforeShareMailSentEventListener::class,
-			);
-		}
+		$context->registerEventListener(
+			\OCA\ShareByMail\Event\BeforeShareMailSentEvent::class,
+			BeforeShareMailSentEventListener::class,
+		);
 	}
 
 	public function boot(IBootContext $context): void {
