@@ -13,6 +13,7 @@ use DateTime;
 use OCA\IonosProcesses\Listener\BeforeShareMailSentEventListener;
 use OCA\IonosProcesses\Service\IonosMailerService;
 use OCA\ShareByMail\Event\BeforeShareMailSentEvent;
+use OCP\EventDispatcher\Event;
 use OCP\IL10N;
 use OCP\Mail\IMessage;
 use OCP\Share\IShare;
@@ -169,6 +170,57 @@ class BeforeShareMailSentEventListenerTest extends TestCase {
 		$event = $this->makeEvent([self::MOCK_RECIPIENT], $templateData);
 		$this->listener->handle($event);
 
+		$this->assertTrue($event->isMailHandled());
+	}
+
+	public function testUnrelatedEventIsIgnored(): void {
+		$this->mockMailer->expects($this->never())->method('send');
+
+		$this->listener->handle(new Event());
+	}
+
+	public function testMultipleRecipientsAreAllPassed(): void {
+		$recipients = ['a@example.com', 'b@example.com', 'c@example.com'];
+
+		$this->mockShare->method('getShareType')->willReturn(IShare::TYPE_EMAIL);
+		$this->mockShare->method('getToken')->willReturn(self::MOCK_SHARE_TOKEN);
+		$this->mockL10N->method('getLanguageCode')->willReturn('en');
+
+		$this->mockMailer
+			->expects($this->once())
+			->method('send')
+			->with(
+				BeforeShareMailSentEventListener::EVENT_NAME_SHARE_BY_LINK,
+				$this->callback(fn ($data) => $data['receiverEmails'] === $recipients),
+			);
+
+		$event = $this->makeEvent($recipients);
+		$this->listener->handle($event);
+
+		$this->assertTrue($event->isMailHandled());
+	}
+
+	public function testMailHandledBeforeSendSoNoSmtpFallbackOnMailerException(): void {
+		$this->mockShare->method('getShareType')->willReturn(IShare::TYPE_EMAIL);
+		$this->mockShare->method('getToken')->willReturn(self::MOCK_SHARE_TOKEN);
+		$this->mockL10N->method('getLanguageCode')->willReturn('en');
+
+		$this->mockMailer
+			->expects($this->once())
+			->method('send')
+			->willThrowException(new \Exception('IONOS API unreachable'));
+
+		$event = $this->makeEvent();
+
+		try {
+			$this->listener->handle($event);
+			$this->fail('Expected exception was not thrown');
+		} catch (\Exception $e) {
+			$this->assertSame('IONOS API unreachable', $e->getMessage());
+		}
+
+		// markMailHandled() is called before send(), so isMailHandled() is true
+		// even when send() throws — native SMTP is suppressed regardless.
 		$this->assertTrue($event->isMailHandled());
 	}
 }
